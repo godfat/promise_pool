@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.description = "promise_pool"
   s.email = ["godfat (XD) godfat.org"]
   s.files = [
+  ".gitignore",
   ".gitmodules",
   ".travis.yml",
   "Gemfile",
