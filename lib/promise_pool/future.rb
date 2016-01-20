@@ -6,7 +6,12 @@ module PromisePool
     end
 
     def method_missing msg, *args, &block
-      @promise.yield.__send__(msg, *args, &block)
+      case result = @promise.yield
+      when ::Exception
+        ::Kernel.raise result
+      else
+        result.__send__(msg, *args, &block)
+      end
     end
   end
 end
