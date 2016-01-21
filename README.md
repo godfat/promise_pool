@@ -40,6 +40,22 @@ gem 'promise_pool', :git => 'git://github.com/godfat/promise_pool.git',
                     :submodules => true
 ```
 
+## SYNOPSIS:
+
+### PromisePool::Promise
+
+#### Basic Usage
+
+#### Multiple Concurrent Promises
+
+#### Error Handling
+
+### PromisePool::PromiseEager
+
+### PromisePool::ThreadPool
+
+### PromisePool::Timer
+
 ## CHANGES:
 
 * [CHANGES](CHANGES.md)
