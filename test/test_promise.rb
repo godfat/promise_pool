@@ -31,4 +31,24 @@ describe PromisePool::Promise do
       Thread.current.should.eq thread
     end.yield
   end
+
+  would 'pass error to callbacks' do
+    errors = []
+    promise = Promise.new.then(&errors.method(:<<))
+
+    mock(promise).warn(is_a(String)) do |msg|
+      msg.should.start_with?("PromisePool::Promise: ERROR: nnf\n")
+    end
+
+    promise.then do |es|
+      es.first.message.should.eq 'boom'
+      raise 'nnf'
+    end
+
+    promise.defer do
+      raise 'boom'
+    end.wait
+
+    errors.map(&:message).should.eq ['boom']
+  end
 end

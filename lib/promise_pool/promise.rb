@@ -21,9 +21,9 @@ module PromisePool
 
     def initialize timer=nil
       self.value = self.error = self.result = nil
-      self.resolved = self.called = false
+      self.resolved = false
+      self.callbacks = []
 
-      self.k     = []
       self.timer = timer
       self.condv = ConditionVariable.new
       self.mutex = Mutex.new
@@ -69,7 +69,12 @@ module PromisePool
     # called in client thread (from the future (e.g. body))
     def yield
       wait
-      mutex.synchronize{ callback }
+      case result
+      when Exception
+        raise result
+      else
+        result
+      end
     end
 
     # called in requesting thread after the request is done
@@ -84,7 +89,7 @@ module PromisePool
 
     # append your actions, which would be called when we're calling back
     def then &action
-      k << action
+      callbacks << action
       self
     end
 
@@ -93,24 +98,28 @@ module PromisePool
     end
 
     protected
-    attr_accessor :value, :error, :result, :resolved, :called,
-                  :k, :timer, :condv, :mutex, :task, :thread
+    attr_accessor :value, :error, :result, :resolved, :callbacks,
+                  :timer, :condv, :mutex, :task, :thread
 
     private
-    def fulfilling value
+    def fulfilling value # should be synchronized
       self.value = value
       resolve
     end
 
-    def rejecting error
+    def rejecting error # should be synchronized
       self.error = error
       resolve
     end
 
-    def resolve
-      self.resolved = true
-      yield if block_given?
+    def resolve # should be synchronized
+      self.result = callbacks.inject(error || value){ |r, k| k.call(r) }
+    rescue Exception => err
+      self.class.set_backtrace(err)
+      self.result = err
+      log_callback_error(err)
     ensure
+      self.resolved = true
       condv.broadcast # client or response might be waiting
     end
 
@@ -136,14 +145,6 @@ module PromisePool
       timer.cancel
     end
 
-    # called in client thread, when yield is called
-    def callback
-      return result if called
-      self.result = k.inject(error || value){ |r, i| i.call(r) }
-    ensure
-      self.called = true
-    end
-
     # timeout!
     def cancel_task
       mutex.synchronize do
@@ -158,6 +159,13 @@ module PromisePool
           rejecting(timer.error)
         end
       end
+    end
+
+    # log user callback error, should never raise
+    def log_callback_error err
+      warn "#{self.class}: ERROR: #{err}\n  from #{err.backtrace.inspect}"
+    rescue Exception => e
+      Thread.main.raise(e) if !!$DEBUG
     end
   end
 end

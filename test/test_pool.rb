@@ -12,14 +12,14 @@ describe PromisePool::ThreadPool do
     @pool.size.should.eq 0
   end
 
-  would 'work, reject, yield' do
+  would 'work, reject, wait' do
     @pool.max_size = 1
     flag = 0
     @promise.defer(@pool) do
       flag.should.eq 0
       flag += 1
       raise 'boom'
-    end.yield
+    end.wait
     flag.should.eq 1
     @promise.send(:error).message.should.eq 'boom'
   end
@@ -67,8 +67,9 @@ describe PromisePool::ThreadPool do
       raise 'boom'
     end
     wr.puts  # start promise #0
-    @promise.yield
-    p1.yield # block until promise #1 is done
+    expect.raise(RuntimeError){@promise.yield}.message.should.eq 'nnf'
+    # block until promise #1 is done
+    expect.raise(RuntimeError){p1.yield}.message.should.eq 'boom'
     flag.should.eq 2
   end
 end
