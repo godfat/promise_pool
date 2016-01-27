@@ -140,7 +140,7 @@ module PromisePool
 
     def timeout_protected_yield
       # timeout might already be set for thread_pool (pool_size > 0)
-      timer.on_timeout{ cancel_task } unless timer
+      timer.on_timeout{ cancel_task } unless timer.timer
       yield
     ensure
       timer.cancel
