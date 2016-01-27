@@ -4,8 +4,9 @@ require 'promise_pool/future'
 
 module PromisePool
   class Promise
-    def self.claim value
+    def self.claim value, &callback
       promise = new
+      promise.then(&callback) if block_given?
       promise.fulfill(value)
       promise
     end
