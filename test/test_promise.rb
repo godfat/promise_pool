@@ -85,6 +85,8 @@ describe PromisePool::Promise do
       Promise.new.defer(pool) do
         pool.size
       end.yield.should.eq 1
+      pool.shutdown
+      pool.size.should.eq 0
     end
   end
 end
