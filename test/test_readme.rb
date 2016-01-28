@@ -9,9 +9,9 @@ describe 'README.md' do
   context = Class.new(Struct.new(:result)) do
     def sleep sec=nil
       if sec
-        super(sec / 100.0)
+        Kernel.sleep(sec / 100.0)
       else
-        super()
+        Kernel.sleep
       end
     end
 
