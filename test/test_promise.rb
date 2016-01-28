@@ -58,4 +58,25 @@ describe PromisePool::Promise do
       end.message.should.eq 'nnf'
     end
   end
+
+  describe 'defer' do
+    describe 'with mock' do
+      after do
+        Muack.verify
+      end
+
+      would 'call in a new thread if no pool' do
+        thread = nil
+        rd, wr = IO.pipe
+        mock(Thread).new.with_any_args.peek_return do |t|
+          thread = t
+          wr.puts
+        end
+        Promise.new.defer do
+          rd.gets
+          Thread.current.should.eq thread
+        end.yield
+      end
+    end
+  end
 end
