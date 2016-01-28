@@ -119,4 +119,24 @@ describe PromisePool::Promise do
       promise.send(:error).message.should.eq 'boom'
     end
   end
+
+  describe 'wait' do
+    would 'broadcast to different threads' do
+      flag = 0
+      mutex = Mutex.new
+      promise = Promise.new
+      threads = 3.times.map do
+        Thread.new do
+          mutex.synchronize{ flag += 1 }
+          promise.wait
+          mutex.synchronize{ flag += 1 }
+          promise.yield
+        end
+      end
+      Thread.pass until flag == 3
+      promise.fulfill('ok')
+      Thread.pass until flag == 6
+      threads.map(&:value).should.eq %w[ok ok ok]
+    end
+  end
 end
