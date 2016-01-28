@@ -19,4 +19,8 @@ describe PromisePool::Future do
       Promise.new.defer{ RuntimeError.new('nnf') }.future.oops
     end.message.should.eq 'nnf'
   end
+
+  would 'respond_to_missing? properly' do
+    [Promise.new.defer{0}.future].flatten.first.should.eq 0
+  end
 end
