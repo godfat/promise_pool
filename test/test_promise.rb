@@ -93,5 +93,17 @@ describe PromisePool::Promise do
       promise.should.resolved?
       flag.should.eq 1
     end
+
+    would 'work, reject, wait' do
+      flag = 0
+      promise = Promise.new.defer do
+        flag.should.eq 0
+        flag += 1
+        raise 'boom'
+      end
+      promise.wait
+      flag.should.eq 1
+      promise.send(:error).message.should.eq 'boom'
+    end
   end
 end

@@ -23,18 +23,6 @@ describe PromisePool::ThreadPool do
     end.yield.should.eq 1
   end
 
-  would 'work, reject, wait' do
-    @pool.max_size = 1
-    flag = 0
-    defer do
-      flag.should.eq 0
-      flag += 1
-      raise 'boom'
-    end.wait
-    flag.should.eq 1
-    @promise.send(:error).message.should.eq 'boom'
-  end
-
   would 'call in thread pool if pool_size > 0' do
     @pool.max_size = 1
     flag = 0
