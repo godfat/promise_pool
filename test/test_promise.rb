@@ -78,5 +78,20 @@ describe PromisePool::Promise do
         end.yield
       end
     end
+
+    would 'work, fulfill, yield' do
+      value = 'body'
+      flag = 0
+      promise = Promise.new.defer do
+        flag.should.eq 0
+        flag += 1
+        value
+      end
+      promise.yield.should.eq value
+      promise.send(:value).should.eq value
+      promise.send(:result).should.eq value
+      promise.should.resolved?
+      flag.should.eq 1
+    end
   end
 end

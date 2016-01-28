@@ -12,9 +12,13 @@ describe PromisePool::ThreadPool do
     @pool.size.should.eq 0
   end
 
+  def defer &block
+    @promise.defer(@pool, &block)
+  end
+
   would 'use the pool if passed' do
     @pool.size.should.eq 0
-    @promise.defer(@pool) do
+    defer do
       @pool.size
     end.yield.should.eq 1
   end
@@ -22,7 +26,7 @@ describe PromisePool::ThreadPool do
   would 'work, reject, wait' do
     @pool.max_size = 1
     flag = 0
-    @promise.defer(@pool) do
+    defer do
       flag.should.eq 0
       flag += 1
       raise 'boom'
@@ -31,37 +35,11 @@ describe PromisePool::ThreadPool do
     @promise.send(:error).message.should.eq 'boom'
   end
 
-  would 'work, fulfill, yield' do
-    value = 'body'
-    @pool.max_size = 2
-    flag = 0
-    @promise.defer(@pool) do
-      flag.should.eq 0
-      flag += 1
-      value
-    end
-    @promise.future.should.eq value
-    @promise.send(:value).should.eq value
-    @promise.send(:result).should.eq value
-    @promise.should.resolved?
-    flag.should.eq 1
-  end
-
-  would 'work, check body', :groups => [:only] do
-    flag = 0
-    result = @promise.defer(@pool) do
-      flag.should.eq 0
-      flag += 1
-    end.future
-    result.should.eq 1
-    flag.should.eq 1
-  end
-
   would 'call in thread pool if pool_size > 0' do
     @pool.max_size = 1
     flag = 0
     rd, wr = IO.pipe
-    @promise.defer(@pool) do
+    defer do
       rd.gets
       flag.should.eq 0
       flag += 1
