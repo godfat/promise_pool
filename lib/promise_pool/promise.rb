@@ -55,6 +55,7 @@ module PromisePool
     def call
       self.thread = Thread.current # set working thread
       protected_yield{ yield } # avoid any exception and do the job
+      self
     end
 
     def future
