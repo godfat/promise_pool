@@ -58,45 +58,4 @@ describe PromisePool::Promise do
       end.message.should.eq 'nnf'
     end
   end
-
-  describe 'defer' do
-    describe 'with mock' do
-      after do
-        Muack.verify
-      end
-
-      would 'call in a new thread if no pool' do
-        thread = nil
-        rd, wr = IO.pipe
-        mock(Thread).new.with_any_args.peek_return do |t|
-          thread = t
-          wr.puts
-        end
-        Promise.new.defer do
-          rd.gets
-          Thread.current.should.eq thread
-        end.yield
-      end
-    end
-
-    would 'use the pool if passed' do
-      pool = ThreadPool.new(10)
-      pool.size.should.eq 0
-      Promise.new.defer(pool) do
-        pool.size
-      end.yield.should.eq 1
-      pool.shutdown
-      pool.size.should.eq 0
-    end
-
-    would 'cancel timeout even if task has not started' do
-      pool = ThreadPool.new(0)
-      timer = Timer.new(0.01)
-      expect.raise(timer.error.class) do
-        Promise.new(timer).defer(pool) do
-          never called
-        end.yield
-      end.should.eq timer.error
-    end
-  end
 end

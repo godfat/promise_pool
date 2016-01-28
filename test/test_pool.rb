@@ -12,6 +12,32 @@ describe PromisePool::ThreadPool do
     @pool.size.should.eq 0
   end
 
+  describe 'with mock' do
+    after do
+      Muack.verify
+    end
+
+    would 'call in a new thread if no pool' do
+      thread = nil
+      rd, wr = IO.pipe
+      mock(Thread).new.with_any_args.peek_return do |t|
+        thread = t
+        wr.puts
+      end
+      Promise.new.defer do
+        rd.gets
+        Thread.current.should.eq thread
+      end.yield
+    end
+  end
+
+  would 'use the pool if passed' do
+    @pool.size.should.eq 0
+    @promise.defer(@pool) do
+      @pool.size
+    end.yield.should.eq 1
+  end
+
   would 'work, reject, wait' do
     @pool.max_size = 1
     flag = 0
