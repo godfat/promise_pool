@@ -4,6 +4,8 @@ require 'timers'
 
 module PromisePool
   class Timer
+    Error = Class.new(RuntimeError)
+
     @mutex = Mutex.new
     @interval = 1
 
@@ -31,16 +33,14 @@ module PromisePool
     end
 
     attr_accessor :timeout, :error, :timer
-    def initialize timeout, error, &block
+    def initialize timeout, error=Error.new('execution expired')
       self.timeout = timeout
       self.error   = error
-      self.block   = block
-      start if block_given?
     end
 
     def on_timeout &block
       self.block = block
-      start if block_given?
+      start
     end
 
     # should never raise!
