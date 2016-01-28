@@ -59,6 +59,19 @@ describe PromisePool::Promise do
     end
   end
 
+  describe 'call' do
+    would 'call in the current thread' do
+      promise = Promise.new
+      promise.call{ raise 'nnf' }
+      promise.send(:thread).should.eq Thread.current
+      promise.send(:task)  .should.eq nil
+      promise.send(:error).message.should.eq 'nnf'
+      expect.raise(RuntimeError) do
+        promise.yield
+      end.message.should.eq 'nnf'
+    end
+  end
+
   describe 'defer' do
     describe 'with mock' do
       after do
