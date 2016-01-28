@@ -9,7 +9,7 @@ require 'promise_pool/task'
 module PromisePool
   class ThreadPool
     attr_reader :workers
-    attr_accessor :idle_time, :max_size
+    attr_accessor :max_size, :idle_time
 
     def initialize max_size, idle_time=60
       @max_size  = max_size

@@ -10,15 +10,22 @@ by Lin Jen-Shin ([godfat](http://godfat.org))
 
 ## DESCRIPTION:
 
-promise_pool
+promise_pool is a promise implementation backed by threads or threads pool,
+with timeout built into it.
 
 ## FEATURES:
 
-* promise_pool
+* PromisePool::Promise
+* PromisePool::ThreadPool
+* PromisePool::Timer
 
 ## WHY?
 
-promise_pool
+This was extracted from [rest-core][] because rest-core itself is getting
+too complex, and extracting promises from it could greatly reduce complexity
+and improve modularity for both rest-core and promise_pool.
+
+* [rest-core]: https://github.com/godfat/rest-core
 
 ## REQUIREMENTS:
 
@@ -42,17 +49,132 @@ gem 'promise_pool', :git => 'git://github.com/godfat/promise_pool.git',
 
 ## SYNOPSIS:
 
-### PromisePool::Promise
+### Basic Usage
 
-#### Basic Usage
+``` ruby
+require 'promise_pool/promise'
+promise = PromisePool::Promise.new
+promise.defer do
+  sleep 1
+  puts "Doing works..."
+  sleep 1
+  "Done!"
+end
+puts "It's not blocking!"
+puts promise.yield
+```
 
-#### Multiple Concurrent Promises
+Prints:
 
-#### Error Handling
+```
+It's not blocking!
+Doing works...
+Done!
+```
+
+### Multiple Concurrent Promises
+
+Doing multiple things at the same time, and wait for all of them at once.
+
+``` ruby
+require 'promise_pool/promise'
+
+futures = 3.times.map do |i|
+  PromisePool::Promise.new.defer do
+    sleep i
+    i
+  end.future
+end
+
+futures.each(&method(:puts))
+```
+
+Prints:
+
+```
+0
+1
+2
+```
+
+### Error Handling
+
+If an exception was raised in the `defer` block, it would propagate whenever
+`yield` is called. Note that futures would implicitly call `yield` for you.
+
+``` ruby
+require 'promise_pool/promise'
+
+future = PromisePool::Promise.new.defer do
+  raise 'nnf'
+end.future
+
+begin
+  future.to_s
+  never reached
+rescue RuntimeError => e
+  puts e
+end
+```
+
+Prints:
+
+```
+nnf
+```
 
 ### PromisePool::ThreadPool
 
+With a thread pool, we could throttle the process and avoid exhausting
+resources whenever needed.
+
+``` ruby
+require 'promise_pool/promise'
+require 'promise_pool/thread_pool'
+
+pool = PromisePool::ThreadPool.new(10, 60) # max_size=10, idle_time=60
+future = PromisePool::Promise.new.defer(pool) do
+  'Only process this whenever a worker is available.'
+end.future
+
+puts future
+
+pool.shutdown # Make sure all the tasks are done in the pool before exit.
+              # You'll surely need this for shutting down gracefully.
+```
+
+Prints:
+
+```
+Only process this whenever a worker is available.
+```
+
 ### PromisePool::Timer
+
+If a task is taking too much time, we could time it out.
+
+``` ruby
+require 'promise_pool/promise'
+require 'promise_pool/timer'
+
+timer = PromisePool::Timer.new(1)
+future = PromisePool::Promise.new(timer).defer do
+  sleep
+  never reached
+end.future
+
+begin
+  future.to_s
+rescue PromisePool::Timer::Error => e
+  puts e.message
+end
+```
+
+Prints:
+
+```
+execution expired
+```
 
 ## CHANGES:
 
