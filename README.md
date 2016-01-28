@@ -50,8 +50,6 @@ gem 'promise_pool', :git => 'git://github.com/godfat/promise_pool.git',
 
 #### Error Handling
 
-### PromisePool::PromiseEager
-
 ### PromisePool::ThreadPool
 
 ### PromisePool::Timer
