@@ -3,7 +3,7 @@ require 'promise_pool/test'
 
 describe PromisePool::Timer do
   before do
-    @timer = Timer.new(0.001)
+    @timer = Timer.new(0.01)
   end
 
   def expect_raise
