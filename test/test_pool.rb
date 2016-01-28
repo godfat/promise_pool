@@ -3,7 +3,7 @@ require 'promise_pool/test'
 
 describe PromisePool::ThreadPool do
   before do
-    @pool = ThreadPool.new(3)
+    @pool = ThreadPool.new(1)
     @promise = Promise.new
   end
 
@@ -24,7 +24,6 @@ describe PromisePool::ThreadPool do
   end
 
   would 'call in thread pool if pool_size > 0' do
-    @pool.max_size = 1
     flag = 0
     rd, wr = IO.pipe
     defer do
@@ -39,10 +38,13 @@ describe PromisePool::ThreadPool do
       flag += 1
       raise 'boom'
     end
-    wr.puts  # start promise #0
-    expect.raise(RuntimeError){@promise.yield}.message.should.eq 'nnf'
-    # block until promise #1 is done
-    expect.raise(RuntimeError){p1.yield}.message.should.eq 'boom'
+    wr.puts # start promise #0
+
+    # even if we're not yielding, the block should still be resolved,
+    # so there should not have any deadlock here.
+    expect.raise(RuntimeError){       p1.yield }.message.should.eq 'boom'
+    expect.raise(RuntimeError){ @promise.yield }.message.should.eq 'nnf'
+
     flag.should.eq 2
   end
 end
