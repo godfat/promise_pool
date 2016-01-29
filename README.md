@@ -24,7 +24,7 @@ This was extracted from [rest-core][] because rest-core itself is getting
 too complex, and extracting promises from it could greatly reduce complexity
 and improve modularity for both rest-core and promise_pool.
 
-* [rest-core]: https://github.com/godfat/rest-core
+[rest-core]: https://github.com/godfat/rest-core
 
 ## REQUIREMENTS:
 
