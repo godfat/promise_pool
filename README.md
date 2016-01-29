@@ -10,8 +10,7 @@ by Lin Jen-Shin ([godfat](http://godfat.org))
 
 ## DESCRIPTION:
 
-promise_pool is a promise implementation backed by threads or threads pool,
-with timeout built into it.
+promise_pool is a promise implementation backed by threads or threads pool.
 
 ## FEATURES:
 
