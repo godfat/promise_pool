@@ -23,4 +23,12 @@ describe PromisePool::Future do
   would 'respond_to_missing? properly' do
     [Promise.new.defer{0}.future].flatten.first.should.eq 0
   end
+
+  would 'resolve deep futures so that it could be serialized' do
+    value = Promise.new.defer{ 0 }.future
+    array = Promise.new.defer{ [value] }.future
+    hash = Promise.new.defer{ {:a => array} }.future
+
+    expect(Marshal.load(Marshal.dump(Future.resolve(hash)))).eq(:a => [0])
+  end
 end

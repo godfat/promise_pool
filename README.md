@@ -122,6 +122,49 @@ Prints:
 nnf
 ```
 
+### Serialization for single future
+
+Sometimes we would like to serialize the result from future, however although
+futures are full-blown proxies, some serializers just can't serialize them.
+
+For example, while `JSON` could dump and load them, `Marshal` can't. So it
+would be great that if we could somehow uncover the future and get the result
+underneath.
+
+For single value future, we could just call `itself` or `tap{}` to do that.
+
+``` ruby
+require 'promise_pool/promise'
+
+future = PromisePool::Promise.new.defer{ 0 }.future
+puts Marshal.load(Marshal.dump(future.itself))
+```
+
+Prints:
+
+```
+0
+```
+
+### Serialization for nested futures
+
+For nested futures, we could use `PromisePool::Future.resolve` to help us.
+
+``` ruby
+require 'promise_pool/promise'
+
+value = PromisePool::Promise.new.defer{ 0 }.future
+array = PromisePool::Promise.new.defer{ [value] }.future
+
+puts Marshal.load(Marshal.dump(PromisePool::Future.resolve(array)))
+```
+
+Prints:
+
+```
+[0]
+```
+
 ### PromisePool::ThreadPool
 
 With a thread pool, we could throttle the process and avoid exhausting
