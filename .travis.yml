@@ -3,7 +3,7 @@ language: ruby
 rvm:
   - 2.2.5
   - 2.3.1
-  - rbx-3.45
+  - rbx
   - jruby-9
 
 before_install:
@@ -12,3 +12,7 @@ before_install:
   - rvm use --install $TRAVIS_RUBY_VERSION --binary --latest
 install: 'gem install bundler; bundle install --retry=3'
 script: 'ruby -vr bundler/setup -S rake test'
+
+matrix:
+  allow_failures:
+    - rvm: rbx
