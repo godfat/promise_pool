@@ -1,6 +1,6 @@
 # CHANGES
 
-## promise_pool 0.9.1 -- 2016-07-21
+## promise_pool 0.9.1 -- 2018-03-20
 
 * Introduced PromisePool::Future.resolve to convert nested futures
 
