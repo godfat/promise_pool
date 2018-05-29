@@ -29,7 +29,7 @@ and improve modularity for both rest-core and promise_pool.
 
 ## REQUIREMENTS:
 
-* Tested with MRI (official CRuby), Rubinius and JRuby.
+* Tested with MRI (official CRuby) and JRuby.
 * gem [timers][]
 
 [timers]: https://github.com/celluloid/timers
