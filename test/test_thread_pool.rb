@@ -26,7 +26,9 @@ describe PromisePool::ThreadPool do
   would 'call in thread pool if pool_size > 0' do
     flag = 0
     rd, wr = IO.pipe
+    @promise.should.not.started?
     defer do
+      @promise.should.started?
       rd.gets
       flag.should.eq 0
       flag += 1
@@ -34,10 +36,12 @@ describe PromisePool::ThreadPool do
     end
     p1 = Promise.new
     p1.defer(@pool) do # block until promise #0 is done because max_size == 1
+      p1.should.started?
       flag.should.eq 1
       flag += 1
       raise 'boom'
     end
+    p1.should.not.started?
     wr.puts # start promise #0
 
     # even if we're not yielding, the block should still be resolved,

@@ -99,6 +99,10 @@ module PromisePool
       resolved
     end
 
+    def started?
+      !!working_thread
+    end
+
     protected
     attr_accessor :value, :error, :result, :resolved, :callbacks,
                   :timer, :condv, :mutex, :task, :thread
@@ -152,7 +156,7 @@ module PromisePool
       mutex.synchronize do
         if resolved?
           # do nothing if it's already done
-        elsif t = thread || task.thread
+        elsif t = working_thread
           t.raise(timer.error) # raise Timeout::Error to working thread
         else
           # task was queued and never started, just cancel it and
@@ -161,6 +165,10 @@ module PromisePool
           rejecting(timer.error)
         end
       end
+    end
+
+    def working_thread
+      thread || (task && task.thread)
     end
 
     # log user callback error, should never raise

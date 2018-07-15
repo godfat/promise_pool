@@ -95,11 +95,14 @@ describe PromisePool::Promise do
     would 'work, fulfill, yield' do
       value = 'body'
       flag = 0
-      promise = Promise.new.defer do
+      promise = Promise.new
+      promise.should.not.started?
+      promise.defer do
         flag.should.eq 0
         flag += 1
         value
       end
+      promise.should.started?
       promise.yield.should.eq value
       promise.send(:value).should.eq value
       promise.send(:result).should.eq value
