@@ -24,11 +24,15 @@ module PromisePool
       workers.size
     end
 
+    def queue_size
+      queue.size
+    end
+
     def defer promise_mutex, &job
       mutex.synchronize do
         task = Task.new(job, promise_mutex)
         queue << task
-        spawn_worker if waiting < queue.size && workers.size < max_size
+        spawn_worker if waiting < queue_size && workers.size < max_size
         task
       end
     end
