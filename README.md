@@ -1,4 +1,4 @@
-# promise_pool [![Build Status](https://secure.travis-ci.org/godfat/promise_pool.png?branch=master)](http://travis-ci.org/godfat/promise_pool) [![Coverage Status](https://coveralls.io/repos/github/godfat/promise_pool/badge.png)](https://coveralls.io/github/godfat/promise_pool) [![Join the chat at https://gitter.im/godfat/promise_pool](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/godfat/promise_pool)
+# promise_pool [![Pipeline status](https://gitlab.com/godfat/promise_pool/badges/master/pipeline.svg)](https://gitlab.com/godfat/promise_pool/-/pipelines)
 
 by Lin Jen-Shin ([godfat](http://godfat.org))
 
