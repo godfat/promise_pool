@@ -6,7 +6,7 @@ by Lin Jen-Shin ([godfat](https://godfat.org))
 
 * [github](https://github.com/godfat/promise_pool)
 * [rubygems](https://rubygems.org/gems/promise_pool)
-* [rdoc](http://rdoc.info/projects/godfat/promise_pool)
+* [rdoc](https://rubydoc.info/github/godfat/promise_pool/master)
 * [issues](https://github.com/godfat/promise_pool/issues) (feel free to ask for support)
 
 ## DESCRIPTION:
