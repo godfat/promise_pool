@@ -1,6 +1,6 @@
 # promise_pool [![Pipeline status](https://gitlab.com/godfat/promise_pool/badges/master/pipeline.svg)](https://gitlab.com/godfat/promise_pool/-/pipelines)
 
-by Lin Jen-Shin ([godfat](http://godfat.org))
+by Lin Jen-Shin ([godfat](https://godfat.org))
 
 ## LINKS:
 
