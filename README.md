@@ -11,7 +11,7 @@ by Lin Jen-Shin ([godfat](https://godfat.org))
 
 ## DESCRIPTION:
 
-promise_pool is a promise implementation backed by threads or threads pool.
+promise_pool is a promise implementation backed by threads or thread pools.
 
 ## FEATURES:
 
